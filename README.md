@@ -1,2 +1,0 @@
-# example-cp
-creating example 

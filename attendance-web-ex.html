@@ -1,0 +1,181 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>QR Attendance System</title>    <script src="https://unpkg.com/html5-qrcode"></script>    <style>  
+    body {  
+      font-family: Cursive;  
+      background:#3AAFA9 ;  
+      text-align: center;  
+      padding: 20px;  
+    }  
+  
+    h2 { color: #1e3a8a; }  
+  
+    #reader {  
+      width: 300px;  
+      margin: auto;  
+      background: #FFFFFFFF;  
+      padding: 10px;  
+      border-radius: 10px;  
+    }  
+  
+    table {  
+      margin: 20px auto;  
+      width: 90%;  
+      border-collapse: collapse;  
+      background: white;  
+    }  
+  
+    th {  
+      background: #2c3e50;  
+      color: white;  
+      padding: 10px;  
+    }  
+  
+    td {  
+      border: 1px solid #ddd;  
+      padding: 8px;  
+    }  
+  
+    tr:nth-child(even) { background: #f1f5f9; }  
+  
+    .present {  
+      background: #2ECC71;  
+      color: #166534;  
+      font-weight: bold;  
+    }  
+  
+    .late {  
+      background:darkgoldenrod;  
+      color: Yellow;  
+      font-weight: bold;  
+    }  
+  
+    .absent {  
+      background: #fecaca;  
+      color: #7f1d1d;  
+      font-weight: bold;  
+    }  
+  
+    button {  
+      padding: 10px 20px;  
+      background: GREEN;  
+      color: white;  
+      border: none;  
+      border-radius: 5px;  
+      font-size: 16px;  
+      cursor: pointer;  
+    }  
+  
+    button:hover { background: #2ECC71; }  
+  </style>  </head>  <body>  <h2>📸 QR Code Attendance System</h2>  
+<p>  
+  <b>Rules:</b><br>  
+ <h2> Present ≤ 6:30 AM | Late ≤ 11:59 AM | Absent ≥ 12:00 PM</h2>  
+</p>  <div id="reader"></div>  <table id="attendanceTable">  
+  <tr>  
+    <th>Student Name</th>  
+    <th>Date</th>  
+    <th>Time</th>  
+    <th>Status</th>  
+  </tr>  
+</table>  <br>  
+<button onclick="exportToCSV()">⬇ Export to Excel</button> <script>
+const students = {
+  "104971140002": "Amoranto Jaz Chine Kenth",
+  "158542150101": "Angel Geliane Q.",
+  "136473150058": "Arago Chris Justin P.",
+  "158528140092": "Ardenia Joshua D.",
+  "136792140419": "Argente Jayson A.",
+  "136858140676": "Cajes Vincent T.",
+  "158528140305": "Capile Raine Allen ST.",
+  "158538140318": "Corcino Ralfred D.",
+  "104728150190": "Diaz Jude",
+  "104762140040": "Estrella Hanson C.",
+  "104762140085": "Estrella Marc Danniel A.",
+  "104770140048": "Fajutnao Kenneth B.",
+  "158528140034": "Francisco Jovelle B.",
+  "158538114002": "Garcia Raniel I.",
+  "104769140113": "Hernandez Nico S.",
+  "105309130326": "Inefable Steven M.",
+  "158528140035": "Jarapa John Kevin G.",
+  "105794130044": "Laugo Mark Angelo A.",
+  "104981130061": "Libiran Warren R.",
+  "104769140114": "Legaspi Lance Kobe B.",
+  "136497140260": "Malla Alex Jaz Z.",
+  "104762140094": "Moreno Marco Angelo D.",
+  "158528130375": "Orzal John Carl P.",
+  "158528150272": "Padernal Prince Daryl V.",
+  "158528140235": "Pedragosa Jomer P.",
+  "105972140014": "Perez Jerome B.",
+  "158528140038": "Rivera Cyruz J.",
+  "104766140347": "Tamayo Daril Miguel B."
+};
+
+// STORAGE PER SECTION
+let attendanceData = {};
+
+function onScanSuccess(decodedText) {
+  // Example: 104971140002|CP
+  let parts = decodedText.split("|");
+  let studentId = parts[0];
+  let section = parts[1] || "UNKNOWN";
+
+  let studentName = students[studentId] || "Unknown Student";
+  let now = new Date();
+
+  let presentCutoff = new Date();
+  presentCutoff.setHours(6, 30, 0, 0);
+
+  let absentCutoff = new Date();
+  absentCutoff.setHours(12, 0, 0, 0);
+
+  let status = "";
+  if (now <= presentCutoff) status = "Present";
+  else if (now < absentCutoff) status = "Late";
+  else status = "Absent";
+
+  // INIT SECTION SHEET
+  if (!attendanceData[section]) {
+    attendanceData[section] = [];
+  }
+
+  // PREVENT DUPLICATE
+  if (attendanceData[section].some(s => s.ID === studentId)) return;
+
+  attendanceData[section].push({
+    ID: studentId,
+    Name: studentName,
+    Date: now.toLocaleDateString(),
+    Time: now.toLocaleTimeString(),
+    Status: status
+  });
+
+  // OPTIONAL DISPLAY SA TABLE
+  let table = document.getElementById("attendanceTable");
+  let row = table.insertRow();
+  row.insertCell(0).innerText = studentName;
+  row.insertCell(1).innerText = now.toLocaleDateString();
+  row.insertCell(2).innerText = now.toLocaleTimeString();
+  row.insertCell(3).innerText = status;
+}
+
+let scanner = new Html5QrcodeScanner(
+  "reader",
+  { fps: 10, qrbox: 250 }
+);
+scanner.render(onScanSuccess);
+
+// EXPORT MULTI-SHEET EXCEL
+function exportToCSV() {
+  let wb = XLSX.utils.book_new();
+
+  for (let section in attendanceData) {
+    let ws = XLSX.utils.json_to_sheet(attendanceData[section]);
+    XLSX.utils.book_append_sheet(wb, ws, section);
+  }
+
+  XLSX.writeFile(wb, "Attendance.xlsx");
+}
+</script> </body>  
+  </html>
