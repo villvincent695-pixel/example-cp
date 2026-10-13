@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Para Sa'yo</title>
+<title>Para Sa'yo To Aking Shiee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -288,15 +288,32 @@
     text-align:left;
     box-shadow:0 10px 25px rgba(0,0,0,.25);
     transform:translateY(0);
-    transition:transform .6s cubic-bezier(.2,.9,.3,1.15);
+    transition:transform .6s cubic-bezier(.2,.9,.3,1.15), top .6s ease, max-height .6s ease;
     z-index:2;
     max-height:0;
     overflow:hidden;
   }
+  .close-letter{
+  display:block;
+  margin:14px auto 0;
+  background:none;
+  border:1px solid var(--paper-line);
+  color:var(--wax-dark);
+  padding:7px 18px;
+  border-radius:999px;
+  font-family:'Karla',sans-serif;
+  font-size:12px;
+  cursor:pointer;
+}
+  
   .envelope.open .letter{
-    transform:translateY(-58px);
-    max-height:560px;
-  }
+  top:50%;
+  left:2%; right:2%;
+  transform:translateY(-50%);
+  max-height:calc(100vh - 120px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
   .letter h3{
     font-family:'Cormorant Garamond', serif;
     font-size:18px;
@@ -410,7 +427,7 @@
   <section class="screen active" id="screen-lock">
     <div class="seal-card">
       <div class="wax"></div>
-      <div class="eyebrow">May nakalaang sulat para sayu mahal kong bff</div>
+      <div class="eyebrow">May nakalaang sulat para sayu mahal kong Asawa</div>
       <h1 class="title">Kailangan ng password.</h1>
       <div class="field">
         <input id="pwInput" type="text" placeholder="i-type dito ang password" autocomplete="off">
@@ -424,7 +441,7 @@
   <section class="screen" id="screen-cake">
     <div class="candle-wrap">
       <div class="eyebrow">Bago tayo ipagpatuloy</div>
-      <h2 class="title2">Gumawa ka muna ng wish mo</h2>
+      <h2 class="title2">Gumawa ka muna ng wish mo shie</h2>
       <div class="cake">
         <div class="flame-zone">
           <div class="flame" id="flame"></div>
@@ -448,17 +465,16 @@
         <div class="env-shade-l"></div>
         <div class="env-shade-r"></div>
         <div class="letter" id="letterBody">
-          <h3>Para sa'yo</h3>
+          <h3>Para sa'yo tong sulat ma ito Asawa ko. scroll lang po</h3>
           <div class="photo-frame">
             <img src="IMG_20260401_154501_0.jpg" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="photo-placeholder"><span class="cam">📷</span>ilagay ang larawan dito</div>
           </div>
-          <p>Sa bawat araw na dumaraan, mas lalo ko lang napapatunayan
-             kung gaano kaswerte ang buhay ko dahil kasama ka.</p>
-          <p>Sana ang taong ito ay puno ng saya, tagumpay, at mga sa mga araw na naiisip mong mag isa ka andito ako at mga kaibigan natin para damayan ka sa lahat ng hirap.</p>
-          <p>Maligayang bati! Patuloy nawang magniningning ang araw mo,
-             tulad ng pagniningning mo sa buhay ng nakapaligid sa'yo. Andito ako lagi para sayu.</p>
-          <div class="sign">— Your Bff Vincent 😇</div>
+          <p>Maligayang kaarawan Shiee more birthday to come po asawa ko, hope we celebrate together when your special day is coming again and hope you Happy for your Special Day. I'm always here asawa ko.</p>
+          <p>Sorry po sa lahat ng nagawa ko po sayu, kasalanan na medyo mahirap para sayu at kasalanan na dapat kailangan sabihin bago gawin, kahit na marami akong kasalanan pinili mo pa rin akong mahalin and babawi po ako ng marami asawa ko ILOVEYOUMUCHHMUCHHHHMOREEPOOO.</p>
+          <p>Thank you Asawa ko kasi po dumating ka sa'akin sa buhay kong miserable, thank you po sa pag pinili mo po mag stay at intidihin ako ng lubosan, and most of all maraming salamat sa time na ikaw ang aking nasasandalan sa lahat ng bagay na mabibigat asawa ko. Thankfull ako dahil nabalik yung pagmamahal na aking hinahangad nung nawala aking ina I LOVE AS ALWAYS ASAWA KO.</p>
+          <div class="sign">— Your Lovable Shie 😇</div>
+<button class="close-letter" id="closeLetter">I-tap para isara ang sulat</button>
         </div>
         <div class="env-flap"></div>
         <div class="env-body"></div>
@@ -558,11 +574,19 @@ musicToggle.addEventListener('click', ()=>{
 // screen 3: envelope
 const envelope = document.getElementById('envelope');
 const envCaption = document.getElementById('envCaption');
-envelope.addEventListener('click', ()=>{
+const letterBody = document.getElementById('letterBody');
+
+function toggleEnvelope(){
   const opening = !envelope.classList.contains('open');
   envelope.classList.toggle('open');
-  envCaption.textContent = opening ? 'i-tap ulit para isara' : 'i-tap ang envelope para buksan';
-  if(opening){ playMusic(); } else { pauseMusic(); }
+  envCaption.textContent = opening ? '' : 'i-tap ang envelope para buksan';
+  if(opening){ playMusic(); letterBody.scrollTop = 0; } else { pauseMusic(); }
+}
+envelope.addEventListener('click', toggleEnvelope);
+letterBody.addEventListener('click', e => e.stopPropagation());
+document.getElementById('closeLetter').addEventListener('click', e => {
+  e.stopPropagation();
+  toggleEnvelope();
 });
 
 document.getElementById('replayBtn').addEventListener('click', ()=>{
@@ -622,5 +646,4 @@ function launchConfetti(){
 }
 </script>
 </body>
-  </html>
-  
+</html>
